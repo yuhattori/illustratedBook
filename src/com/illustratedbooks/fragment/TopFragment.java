@@ -22,25 +22,6 @@ public class TopFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		// // Zipファイルを一時ファイルとして保存
-		// File file = null;
-		// try {
-		// file = File.createTempFile("sample",
-		// "zip");//一時ファイル名は暫定的にsample.zipとする
-		// InputStream is = getResources().getAssets().open("akazukin.zip");
-		// FileOutputStream fos = new FileOutputStream(file);
-		// byte[] buffer = new byte[1024];
-		// int length = 0;
-		// while ((length = is.read(buffer))>0) {
-		// fos.write(buffer, 0, length);
-		// }
-		// fos.close();
-		// is.close();
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		//
-
 		return inflater.inflate(R.layout.top_layout, container, false);
 	}
 
