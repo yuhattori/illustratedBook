@@ -34,7 +34,7 @@ public class TopFragment extends Fragment {
 		startBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Log.d("TopFragment", "on click startBtn");
+				Log.d(TAG, "on click startBtn");
 				((MainActivity) getActivity()).changeActivity("startBtn");
 			}
 		});
@@ -63,6 +63,16 @@ public class TopFragment extends Fragment {
 			Log.d(TAG, "first boot");
 			continueBtn.setVisibility(View.INVISIBLE);
 		}
+		
+		// [あそびかた]ボタン
+		Button configBtn = (Button) getActivity().findViewById(R.id.configBtn);
+		configBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "on click configBtn");
+				//TODO あそびかた画面の呼び出しを書く
+			}
+		});
 
 	}
 }
