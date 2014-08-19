@@ -465,4 +465,12 @@ public class StorySurfaceView extends SurfaceView implements
 			mAutoModeTask = null;
 		}
 	}
+
+	public int getMsgSpd() {
+		return mMsgSpd;
+	}
+
+	public void setMsgSpd(int mMsgSpd) {
+		this.mMsgSpd = mMsgSpd;
+	}
 }
