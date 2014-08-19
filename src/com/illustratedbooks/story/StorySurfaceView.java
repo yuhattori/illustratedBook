@@ -336,13 +336,6 @@ public class StorySurfaceView extends SurfaceView implements
 					autoMode(OFF);
 					Toast.makeText(getContext(), "オートモードOFF", Toast.LENGTH_SHORT).show();
 				}
-
-				// ウィンドウを消すかどうかのフラグジャッジ
-				// if (mWindowFlag) {
-				// mWindowFlag = false;
-				// } else {
-				// mWindowFlag = true;
-				// }
 				break;
 
 			case FLICK_LEFT:
@@ -361,10 +354,17 @@ public class StorySurfaceView extends SurfaceView implements
 			case FLICK_UP:
 				/* 上にフリックしたとき */
 				Log.d(TAG, "FLICK_UP");
+				 mWindowFlag = true;
 				break;
 			case FLICK_DOWN:
 				/* 下にフリックしたとき */
 				Log.d(TAG, "FLICK_DOWN");
+				 //ウィンドウを消すかどうかのフラグジャッジ
+				 if (mWindowFlag) {
+				 mWindowFlag = false;
+				 } else {
+				 mWindowFlag = true;
+				 }
 				break;
 				
 			default:
@@ -421,7 +421,7 @@ public class StorySurfaceView extends SurfaceView implements
 			}
 		} else if ((Math.abs(mBefore_y - ev.getY()) > 100)) {
 			// 移動した距離により上下のフリックと判断されたとき
-			if (mBefore_y  < ev.getY()) {
+			if (mBefore_y  > ev.getY()) {
 				// 上にフリックした時
 				gesture = FLICK_UP;
 			} else {
