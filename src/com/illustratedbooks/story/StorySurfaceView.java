@@ -164,8 +164,7 @@ public class StorySurfaceView extends SurfaceView implements
 								.decodeStream(getResources().getAssets().open(
 										mBgPath)));// リサイズ済背景画像
 					} catch (IOException e) {
-						Log.e(StorySurfaceView.TAG,
-								"failed reading background  image file");
+						Log.e(TAG, "failed reading background  image file");
 						Toast.makeText(getContext(),
 								"failed reading background image file", 0)
 								.show();
