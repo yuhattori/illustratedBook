@@ -82,7 +82,7 @@ public class StorySurfaceView extends SurfaceView implements
 	final int FLICK_LEFT = 5;
 	final int FLICK_UP = 6;
 	final int FLICK_DOWN = 7;
-	
+
 	private float mBefore_x;// MOVE後のUPでｘ座標と比較する
 	private float mBefore_y;// MOVE後のUPでｙ座標と比較する
 	private long mTouchDownTimeMillis;// 画面にタッチした瞬間の時間
@@ -142,6 +142,8 @@ public class StorySurfaceView extends SurfaceView implements
 	// SurfaceView生成時に呼び出される(初期画面の描画)
 	public void surfaceCreated(final SurfaceHolder holder) {
 
+		mBgPath = "";// 背景画像のパスを格納するメンバの初期化
+
 		// SingleThreadScheduledExecutor による単一 Thread のインターバル実行
 		mDrowTask = Executors.newSingleThreadScheduledExecutor();
 		mDrowTask.scheduleAtFixedRate(new Runnable() {
@@ -152,31 +154,41 @@ public class StorySurfaceView extends SurfaceView implements
 				mCanvas = holder.lockCanvas();
 
 				// *背景画像*//
-				mBgPath = "background/"
-						+ mCSVdata.get(mCSVColumnNo)[BACK_GROUND];
-				try {
-					mBgFig = resizeBg(mContext, BitmapFactory
-							.decodeStream(getResources().getAssets().open(
-									mBgPath)));// リサイズ済背景画像
-				} catch (IOException e) {
-					// TODO 画像読み込みの失敗のポップアップを表示する
-					e.printStackTrace();
+				if (!mBgPath.equalsIgnoreCase("background/"
+						+ mCSVdata.get(mCSVColumnNo)[BACK_GROUND])) {
+					// 背景画像が変わっていた場合
+					mBgPath = "background/"
+							+ mCSVdata.get(mCSVColumnNo)[BACK_GROUND];
+					try {
+						mBgFig = resizeBg(mContext, BitmapFactory
+								.decodeStream(getResources().getAssets().open(
+										mBgPath)));// リサイズ済背景画像
+					} catch (IOException e) {
+						Log.e(StorySurfaceView.TAG,
+								"failed reading background  image file");
+						Toast.makeText(getContext(),
+								"failed reading background image file", 0)
+								.show();
+						e.printStackTrace();
+					}
 				}
-				// *メッセージウィンドウ*//
-				try {
-					mMsgWin = BitmapFactory.decodeStream(getResources()
-							.getAssets().open(MSGWIN_PATH));
-					mPadding = mDrow_w / 30;
-					mMsgWin = Bitmap.createScaledBitmap(mMsgWin, mDrow_w
-							- mPadding * 2, mDrow_h / 4, true);
-					mPaintw = new Paint();
-					mPaintw.setAlpha(ALPHA);// 透過度を設定
 
-				} catch (IOException e) {
-					// TODO ウィンドウ背景画像の読み込みエラー
-					Log.e(TAG, "failed reading messege window file");
-					e.printStackTrace();
-				}
+				// *メッセージウィンドウの画像設定*//
+				if (mMsgWin == null)
+					try {
+						mMsgWin = BitmapFactory.decodeStream(getResources()
+								.getAssets().open(MSGWIN_PATH));
+						mPadding = mDrow_w / 30;
+						mMsgWin = Bitmap.createScaledBitmap(mMsgWin, mDrow_w
+								- mPadding * 2, mDrow_h / 4, true);
+						mPaintw = new Paint();
+						mPaintw.setAlpha(ALPHA);// 透過度を設定
+
+					} catch (IOException e) {
+						// TODO ウィンドウ背景画像の読み込みエラー
+						Log.e(TAG, "failed reading messege window file");
+						e.printStackTrace();
+					}
 
 				// 描画処理
 				mCanvas.drawBitmap(mBgFig, mDrowPos_l, mDrowPos_t, null);// 背景を表示
@@ -193,7 +205,7 @@ public class StorySurfaceView extends SurfaceView implements
 				holder.unlockCanvasAndPost(mCanvas);
 			}
 
-		}, 100, INTERVAL_PERIOD, TimeUnit.MILLISECONDS);// 100ms後にINTERVAL_PERIODの間隔で更新
+		}, 0, INTERVAL_PERIOD, TimeUnit.MILLISECONDS);// 100ms後にINTERVAL_PERIODの間隔で更新
 	}
 
 	/**
@@ -240,8 +252,8 @@ public class StorySurfaceView extends SurfaceView implements
 		Editor editor = pref.edit();
 		editor.putString("savedRowNo", mCSVdata.get(mCSVColumnNo)[ROW]);
 		editor.commit();
-		
-		//スレッドをシャットダウン
+
+		// スレッドをシャットダウン
 		mDrowTask.shutdown();
 	}
 
@@ -331,10 +343,12 @@ public class StorySurfaceView extends SurfaceView implements
 				// オートモードに移行するか
 				if (!mAutoModeFlag) {
 					autoMode(ON);
-					Toast.makeText(getContext(), "オートモードON", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getContext(), "オートモードON", Toast.LENGTH_SHORT)
+							.show();
 				} else {
 					autoMode(OFF);
-					Toast.makeText(getContext(), "オートモードOFF", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getContext(), "オートモードOFF",
+							Toast.LENGTH_SHORT).show();
 				}
 				break;
 
@@ -354,19 +368,19 @@ public class StorySurfaceView extends SurfaceView implements
 			case FLICK_UP:
 				/* 上にフリックしたとき */
 				Log.d(TAG, "FLICK_UP");
-				 mWindowFlag = true;
+				mWindowFlag = true;
 				break;
 			case FLICK_DOWN:
 				/* 下にフリックしたとき */
 				Log.d(TAG, "FLICK_DOWN");
-				 //ウィンドウを消すかどうかのフラグジャッジ
-				 if (mWindowFlag) {
-				 mWindowFlag = false;
-				 } else {
-				 mWindowFlag = true;
-				 }
+				// ウィンドウを消すかどうかのフラグジャッジ
+				if (mWindowFlag) {
+					mWindowFlag = false;
+				} else {
+					mWindowFlag = true;
+				}
 				break;
-				
+
 			default:
 				break;
 			}
@@ -421,7 +435,7 @@ public class StorySurfaceView extends SurfaceView implements
 			}
 		} else if ((Math.abs(mBefore_y - ev.getY()) > 100)) {
 			// 移動した距離により上下のフリックと判断されたとき
-			if (mBefore_y  > ev.getY()) {
+			if (mBefore_y > ev.getY()) {
 				// 上にフリックした時
 				gesture = FLICK_UP;
 			} else {
