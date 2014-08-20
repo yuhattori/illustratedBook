@@ -37,7 +37,7 @@ public class StorySurfaceView extends SurfaceView implements
 	/* 描写関連 */
 	public static final long INTERVAL_PERIOD = 16;// 再表示させるまでの間隔（ミリ秒）
 	private ScheduledExecutorService mDrowTask;// 表示用スレッド
-	private ScheduledExecutorService mAutoModeTask;// オートモード様スレッド
+	private ScheduledExecutorService mAutoModeTask;// オートモード用スレッド
 	private Boolean mAutoModeFlag = false;// オートモード用のフラグ
 	private static final Boolean ON = true;
 	private static final Boolean OFF = false;
