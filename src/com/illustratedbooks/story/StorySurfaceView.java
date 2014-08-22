@@ -39,10 +39,11 @@ public class StorySurfaceView extends SurfaceView implements
 	private ScheduledExecutorService mDrowTask;// 表示用スレッド
 	private ScheduledExecutorService mAutoModeTask;// オートモード用スレッド
 	private Boolean mAutoModeFlag = false;// オートモード用のフラグ
+	private static int MSG_ALL = -1;// 文字送りをせずすべてを表示させるときに使用
 	private static final Boolean ON = true;
 	private static final Boolean OFF = false;
-	// TODO 設定画面などでmMsgSpdを設定する画面が必要
-	private int mMsgSpd = 3;// オートモードにおいて表示する速度
+	private int mMsgSpd = 100;// オートモードにおいて表示する速度(ms)
+	private int mNowPrintMsgNum = 0;//現在表示しているメッセージの文字数
 
 	// 背景
 	private String mBgPath; // 背景画像のパス
@@ -197,37 +198,59 @@ public class StorySurfaceView extends SurfaceView implements
 					mCanvas.drawBitmap(mMsgWin, mDrowPos_l + mPadding,
 							mDrowPos_t + mDrow_h * 3 / 4 - mPadding * 2,
 							mPaintw);// メッセージウィンドウを表示
-					setMessege();// メッセージウィンドウにテキストを表示
-				}
 
+					if (mNowPrintMsgNum != mCSVdata.get(mCSVColumnNo)[TEXT]
+							.length() && mMsgSpd != MSG_ALL) {
+						// 文字送り途中の場合
+						setMessege(mNowPrintMsgNum++);// メッセージウィンドウにテキストを表示
+					}else{
+						setMessege();
+					}
+				}
 				// LockしたCanvasを解放する
 				holder.unlockCanvasAndPost(mCanvas);
 			}
 
-		}, 0, INTERVAL_PERIOD, TimeUnit.MILLISECONDS);// 100ms後にINTERVAL_PERIODの間隔で更新
+		}, 0, mMsgSpd, TimeUnit.MILLISECONDS);// 100ms後にINTERVAL_PERIODの間隔で更新
 	}
 
 	/**
-	 * メッセージウィンドウにCSVに書かれているテキストを表示させる
+	 * メッセージウィンドウにCSVに書かれているテキストをすべて表示させる
 	 */
 	private void setMessege() {
+		setMessege(MSG_ALL);
+	}
+
+	/**
+	 * メッセージウィンドウにCSVに書かれているテキストを指定字数表示させる
+	 * 
+	 * @param charNo
+	 *            表示する文字数
+	 * 
+	 */
+	private void setMessege(int charNum) {
 		mPaintf = new Paint();
 		mPaintf.setColor(Color.WHITE);
 		mPaintf.setTextSize(FONT_SIZE);
 		String message = mCSVdata.get(mCSVColumnNo)[TEXT];
+		if (charNum == MSG_ALL)
+			charNum = message.length();// 全文字表示の場合
 		int maxWidth = mDrow_w - mPadding * 2;// paddingを含めたメッセージウィンドウの幅で改行する。
 		int lineBreakPoint = Integer.MAX_VALUE;// 仮に、最大値を入れておく
 		int currentIndex = 0;// 現在、原文の何文字目まで改行が入るか確認したかを保持する
 		int linePointY = mDrowPos_t + mDrow_h * 3 / 4 - mPadding * 2
 				+ FONT_SIZE;// 文字を描画するY位置。改行の度にインクリメントする。
 
-		while (lineBreakPoint != 0) {
+		while (charNum != 0) {
 			String mesureString = message.substring(currentIndex);// 未だ表示されていない文字列のみ抽出
 			lineBreakPoint = mPaintf.breakText(mesureString, true, maxWidth,
 					null);// 表示する文字列の幅
 			if (lineBreakPoint != 0) {
 				String line = message.substring(currentIndex, currentIndex
 						+ lineBreakPoint);// 表示する一文を抽出
+				if (charNum < line.length())
+					line = line.substring(0, charNum);
+				charNum -= line.length();
 				mCanvas.drawText(line, mDrowPos_l + mPadding, linePointY,
 						mPaintf);
 				linePointY += FONT_SIZE;// 改行後の位置
@@ -409,6 +432,7 @@ public class StorySurfaceView extends SurfaceView implements
 			// 最後でなかった場合
 			mCSVColumnNo += 1;// シナリオを一つ進める
 			mWindowFlag = true;// ロングタップのウィンドウフラグの初期化
+			mNowPrintMsgNum=0;//現在表示しているメッセージの文字数を初期化
 		} else {
 			// TODO　最後だった場合
 		}
