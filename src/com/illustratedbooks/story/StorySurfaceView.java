@@ -39,11 +39,12 @@ public class StorySurfaceView extends SurfaceView implements
 	private ScheduledExecutorService mDrowTask;// 表示用スレッド
 	private ScheduledExecutorService mAutoModeTask;// オートモード用スレッド
 	private Boolean mAutoModeFlag = false;// オートモード用のフラグ
+	private int mAutoModeSp = 1000;// オートモードのスピード
 	private static int MSG_ALL = -1;// 文字送りをせずすべてを表示させるときに使用
-	private static final Boolean ON = true;
-	private static final Boolean OFF = false;
-	private int mMsgSpd = 100;// オートモードにおいて表示する速度(ms)
-	private int mNowPrintMsgNum = 0;//現在表示しているメッセージの文字数
+	private static final Boolean ON = true;// オートモードON
+	private static final Boolean OFF = false;// オートモードOFF
+	private int mMsgSpd = 100;// 文字送りする速度(ms)
+	private int mNowPrintMsgNum = 0;// 現在表示しているメッセージの文字数
 
 	// 背景
 	private String mBgPath; // 背景画像のパス
@@ -201,9 +202,11 @@ public class StorySurfaceView extends SurfaceView implements
 
 					if (mNowPrintMsgNum != mCSVdata.get(mCSVColumnNo)[TEXT]
 							.length() && mMsgSpd != MSG_ALL) {
+						//TODO mMsgSpd != MSG_ALLでは条件が合わない
 						// 文字送り途中の場合
 						setMessege(mNowPrintMsgNum++);// メッセージウィンドウにテキストを表示
-					}else{
+					} else {
+						//文字送り終了の場合　or 最速表示の場合
 						setMessege();
 					}
 				}
@@ -385,7 +388,13 @@ public class StorySurfaceView extends SurfaceView implements
 				/* 右にフリックしたとき */
 				// シナリオを一つ進める
 				Log.d(TAG, "FLICK_RIGHT");
-				nextCoulumn();
+				if (mNowPrintMsgNum != mCSVdata.get(mCSVColumnNo)[TEXT]
+						.length()) {
+					//TODO 文字送りの途中の場合
+				} else {
+					//すべて表示が終えている場合
+					nextCoulumn();
+				}
 				break;
 			case FLICK_UP:
 				/* 上にフリックしたとき */
@@ -419,6 +428,7 @@ public class StorySurfaceView extends SurfaceView implements
 			// 最初でない場合
 			mCSVColumnNo -= 1;// シナリオを一つ戻す
 			mWindowFlag = true;// ロングタップのウィンドウフラグの初期化
+			mNowPrintMsgNum = 0;// 現在表示しているメッセージの文字数を初期化
 		} else {
 			// TODO 最初の場合
 		}
@@ -432,7 +442,7 @@ public class StorySurfaceView extends SurfaceView implements
 			// 最後でなかった場合
 			mCSVColumnNo += 1;// シナリオを一つ進める
 			mWindowFlag = true;// ロングタップのウィンドウフラグの初期化
-			mNowPrintMsgNum=0;//現在表示しているメッセージの文字数を初期化
+			mNowPrintMsgNum = 0;// 現在表示しているメッセージの文字数を初期化
 		} else {
 			// TODO　最後だった場合
 		}
@@ -494,7 +504,7 @@ public class StorySurfaceView extends SurfaceView implements
 				public void run() {
 					nextCoulumn();
 				}
-			}, 0, mMsgSpd, TimeUnit.SECONDS);
+			}, 0, mAutoModeSp, TimeUnit.SECONDS);
 		} else {
 			// オートモード解除
 			mAutoModeFlag = false;
