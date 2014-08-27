@@ -374,12 +374,8 @@ public class StorySurfaceView extends SurfaceView implements
 				// オートモードに移行するか
 				if (!mAutoModeFlag) {
 					autoMode(ON);
-					Toast.makeText(getContext(), "オートモードON", Toast.LENGTH_SHORT)
-							.show();
 				} else {
 					autoMode(OFF);
-					Toast.makeText(getContext(), "オートモードOFF",
-							Toast.LENGTH_SHORT).show();
 				}
 				break;
 
@@ -503,6 +499,8 @@ public class StorySurfaceView extends SurfaceView implements
 	private void autoMode(Boolean flag) {
 		if (flag == ON) {
 			// オートモード開始
+			Log.d(TAG, "オートモードON");
+			Toast.makeText(getContext(), "オートモードON", Toast.LENGTH_SHORT).show();
 			mAutoModeFlag = true;
 			mAutoModeTask = Executors.newSingleThreadScheduledExecutor();
 			mAutoModeTask.scheduleAtFixedRate(new Runnable() {
@@ -512,7 +510,7 @@ public class StorySurfaceView extends SurfaceView implements
 							.length() || mMsgSpd == MAXIMUM_MSG_SPEED)
 						// すべてメッセージが表示されている場合
 						try {
-							Thread.sleep(1000);
+							Thread.sleep(1000);// 文字送りが全部表示されると同時に次の文字が表示される事を防ぐ
 							nextCoulumn();
 						} catch (InterruptedException e) {
 							e.printStackTrace();
@@ -521,6 +519,9 @@ public class StorySurfaceView extends SurfaceView implements
 			}, 0, mAutoModeSp, TimeUnit.MILLISECONDS);
 		} else {
 			// オートモード解除
+			Log.d(TAG, "オートモードOFF");
+			Toast.makeText(getContext(), "オートモードOFF", Toast.LENGTH_SHORT)
+					.show();
 			mAutoModeFlag = false;
 			mAutoModeTask.shutdown();
 			mAutoModeTask = null;
