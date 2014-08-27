@@ -384,19 +384,15 @@ public class StorySurfaceView extends SurfaceView implements
 				// シナリオを一つ戻す
 				Log.d(TAG, "FLICK_LEFT");
 				backColumn();
+				mNowPrintMsgNum = 0;
 				break;
 
 			case FLICK_RIGHT:
 				/* 右にフリックしたとき */
 				// シナリオを一つ進める
 				Log.d(TAG, "FLICK_RIGHT");
-				if (mNowPrintMsgNum != mCSVdata.get(mCSVColumnNo)[TEXT]
-						.length()) {
-					// TODO 文字送りの途中の場合
-				} else {
-					// すべて表示が終えている場合
-					nextCoulumn();
-				}
+				nextCoulumn();
+				mNowPrintMsgNum = 0;
 				break;
 			case FLICK_UP:
 				/* 上にフリックしたとき */
