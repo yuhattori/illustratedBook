@@ -40,8 +40,8 @@ public class StorySurfaceView extends SurfaceView implements
 	private Boolean mAutoModeFlag = false;// オートモード用のフラグ
 	private int mAutoModeSp = 1000;// オートモードのスピード
 	private static int MSG_ALL = -1;// 文字送りをせずすべてを表示させるときに使用
-	private static final Boolean ON = true;// オートモードON
-	private static final Boolean OFF = false;// オートモードOFF
+	public static final Boolean ON = true;// オートモードON
+	public static final Boolean OFF = false;// オートモードOFF
 	private int mMsgSpd = 100;// 文字送りする速度(=画面更新速度)(ms)
 	private final int MAXIMUM_MSG_SPEED = 10;// 文字送りする速度=画面の更新速度の最速値
 	private int mNowPrintMsgNum = 0;// 現在表示しているメッセージの文字数
@@ -492,7 +492,7 @@ public class StorySurfaceView extends SurfaceView implements
 	 * @param flag
 	 *            　ture＝オートモード　false＝オートモード解除
 	 */
-	private void autoMode(Boolean flag) {
+	public void autoMode(Boolean flag) {
 		if (flag == ON) {
 			// オートモード開始
 			Log.d(TAG, "オートモードON");
@@ -533,6 +533,7 @@ public class StorySurfaceView extends SurfaceView implements
 	}
 
 	/**
+	 * 現在オートモード中かを判断する
 	 * @return mAutoModeFlag ON :true OFF : false
 	 */
 	public Boolean isAutoMode() {
