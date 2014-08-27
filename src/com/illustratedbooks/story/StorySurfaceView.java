@@ -35,7 +35,6 @@ public class StorySurfaceView extends SurfaceView implements
 	Canvas mCanvas;
 
 	/* 描写関連 */
-	public static final long INTERVAL_PERIOD = 16;// 再表示させるまでの間隔（ミリ秒）
 	private ScheduledExecutorService mDrowTask;// 表示用スレッド
 	private ScheduledExecutorService mAutoModeTask;// オートモード用スレッド
 	private Boolean mAutoModeFlag = false;// オートモード用のフラグ
@@ -43,7 +42,8 @@ public class StorySurfaceView extends SurfaceView implements
 	private static int MSG_ALL = -1;// 文字送りをせずすべてを表示させるときに使用
 	private static final Boolean ON = true;// オートモードON
 	private static final Boolean OFF = false;// オートモードOFF
-	private int mMsgSpd = 100;// 文字送りする速度(ms)
+	private int mMsgSpd = 100;// 文字送りする速度(=画面更新速度)(ms)
+	private final int MAXIMUM_MSG_SPEED = 10;// 文字送りする速度=画面の更新速度の最速値
 	private int mNowPrintMsgNum = 0;// 現在表示しているメッセージの文字数
 
 	// 背景
@@ -201,12 +201,11 @@ public class StorySurfaceView extends SurfaceView implements
 							mPaintw);// メッセージウィンドウを表示
 
 					if (mNowPrintMsgNum != mCSVdata.get(mCSVColumnNo)[TEXT]
-							.length() && mMsgSpd != MSG_ALL) {
-						//TODO mMsgSpd != MSG_ALLでは条件が合わない
+							.length() && mMsgSpd != MAXIMUM_MSG_SPEED) {
 						// 文字送り途中の場合
 						setMessege(mNowPrintMsgNum++);// メッセージウィンドウにテキストを表示
 					} else {
-						//文字送り終了の場合　or 最速表示の場合
+						// 文字送り終了の場合　or 最速表示の場合
 						setMessege();
 					}
 				}
@@ -356,9 +355,16 @@ public class StorySurfaceView extends SurfaceView implements
 
 			case SINGLE_TAP:
 				/* タップを検出した時 */
-				// シナリオを一つ進める
 				Log.d(TAG, "SINGLE_TAP");
-				nextCoulumn();
+				if (mNowPrintMsgNum != mCSVdata.get(mCSVColumnNo)[TEXT]
+						.length()) {
+					// 文字送り途中の場合
+					mNowPrintMsgNum = mCSVdata.get(mCSVColumnNo)[TEXT].length();
+				} else {
+					// シナリオを一つ進める
+					nextCoulumn();
+					mNowPrintMsgNum = 0;
+				}
 				break;
 
 			case LONG_TAP:
@@ -390,9 +396,9 @@ public class StorySurfaceView extends SurfaceView implements
 				Log.d(TAG, "FLICK_RIGHT");
 				if (mNowPrintMsgNum != mCSVdata.get(mCSVColumnNo)[TEXT]
 						.length()) {
-					//TODO 文字送りの途中の場合
+					// TODO 文字送りの途中の場合
 				} else {
-					//すべて表示が終えている場合
+					// すべて表示が終えている場合
 					nextCoulumn();
 				}
 				break;
@@ -502,9 +508,17 @@ public class StorySurfaceView extends SurfaceView implements
 			mAutoModeTask.scheduleAtFixedRate(new Runnable() {
 				@Override
 				public void run() {
-					nextCoulumn();
+					if (mNowPrintMsgNum == mCSVdata.get(mCSVColumnNo)[TEXT]
+							.length() || mMsgSpd == MAXIMUM_MSG_SPEED)
+						// すべてメッセージが表示されている場合
+						try {
+							Thread.sleep(1000);
+							nextCoulumn();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 				}
-			}, 0, mAutoModeSp, TimeUnit.SECONDS);
+			}, 0, mAutoModeSp, TimeUnit.MILLISECONDS);
 		} else {
 			// オートモード解除
 			mAutoModeFlag = false;
@@ -519,5 +533,12 @@ public class StorySurfaceView extends SurfaceView implements
 
 	public void setMsgSpd(int mMsgSpd) {
 		this.mMsgSpd = mMsgSpd;
+	}
+
+	/**
+	 * @return mAutoModeFlag ON :true OFF : false
+	 */
+	public Boolean isAutoMode() {
+		return mAutoModeFlag;
 	}
 }
