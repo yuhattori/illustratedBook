@@ -68,14 +68,14 @@ public class TopFragment extends Fragment {
 					alertDialog.setTitle("えほんをはじめからよみます"); // タイトル設定
 					alertDialog.setMessage("つづき　が　ないので　はじめから　えほん　を　よみます。"); // 内容(メッセージ)設定
 
-					// はいボタンの設定
+					// [はい]ボタンの設定
 					alertDialog.setPositiveButton("はい",
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int which) {
-									// はいボタン押下時の処理
+									// [はい]ボタン押下時の処理
 									Log.d(TAG, "えほんをはじめからよみますか？　＞　はい");
-									// はいボタンと同じ動きをする
+									// [はじめから]ボタンと同じ動きをする
 									((MainActivity) getActivity())
 											.changeActivity("startBtn");
 								}
