@@ -43,7 +43,7 @@ public class StoryActivity extends FragmentActivity {
 				//オートモード中の場合は解除
 				mStSf.autoMode(StorySurfaceView.OFF);
 			
-			AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+			AlertDialog.Builder alertDialog = new AlertDialog.Builder(mAct);
 
 			// ダイアログの設定
 			alertDialog.setTitle("えほんをとじてはじめにもどる？"); // タイトル設定
