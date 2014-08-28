@@ -1,19 +1,23 @@
 package com.illustratedbooks.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.illustratedbooks.R;
 import com.illustratedbooks.fragment.TopFragment;
+import com.illustratedbooks.story.StorySurfaceView;
 
 public class MainActivity extends FragmentActivity {
-	
+
 	private static final String TAG = MainActivity.class.getSimpleName();
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,6 +44,18 @@ public class MainActivity extends FragmentActivity {
 		intent.putExtra("transitionSource", TAG);
 		intent.setClass(MainActivity.this, StoryActivity.class);
 		startActivity(intent);
+		this.finish();
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_BACK:
+			// バックボタンが押されたとき
+			this.finish();
+			return true;
+		default:
+			return false;
+		}
+	}
 }
