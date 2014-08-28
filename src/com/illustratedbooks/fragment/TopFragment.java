@@ -1,6 +1,9 @@
 package com.illustratedbooks.fragment;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,6 +20,7 @@ import com.illustratedbooks.story.StorySurfaceView;
 public class TopFragment extends Fragment {
 
 	private static final String TAG = TopFragment.class.getSimpleName();
+	private SharedPreferences mPref;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,34 +47,51 @@ public class TopFragment extends Fragment {
 		Button continueBtn = (Button) getActivity().findViewById(
 				R.id.continueBtn);
 
-		SharedPreferences pref = getActivity().getSharedPreferences(
+		mPref = getActivity().getSharedPreferences(
 				"savedata" + StorySurfaceView.CSV_FILE_NAME,
 				Context.MODE_PRIVATE);
 
-		if (!pref.getString("savedRowNo", "noData").equals("noData")) {
-			// savedataが存在するとき
-			continueBtn.setVisibility(View.VISIBLE);
-			continueBtn.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Log.d(TAG, "on click continueBtn");
+		continueBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "on click continueBtn");
+				if (!mPref.getString("savedRowNo", "noData").equals("noData")) {
 					((MainActivity) getActivity())
 							.changeActivity("continueBtn");
+				} else {
+					// 初回起動でsavedataが存在しないとき
+					Log.d(TAG, "first boot");
+					AlertDialog.Builder alertDialog = new AlertDialog.Builder(
+							(MainActivity) getActivity());
+
+					// ダイアログの設定
+					alertDialog.setTitle("えほんをはじめからよみます"); // タイトル設定
+					alertDialog.setMessage("つづき　が　ないので　はじめから　えほん　を　よみます。"); // 内容(メッセージ)設定
+
+					// はいボタンの設定
+					alertDialog.setPositiveButton("はい",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// はいボタン押下時の処理
+									Log.d(TAG, "えほんをはじめからよみますか？　＞　はい");
+									// はいボタンと同じ動きをする
+									((MainActivity) getActivity())
+											.changeActivity("startBtn");
+								}
+							});
+					alertDialog.show();
 				}
-			});
-		} else {
-			// 初回起動でsavedataが存在しないとき
-			Log.d(TAG, "first boot");
-			continueBtn.setVisibility(View.INVISIBLE);
-		}
-		
+			}
+		});
+
 		// [あそびかた]ボタン
 		Button configBtn = (Button) getActivity().findViewById(R.id.configBtn);
 		configBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, "on click configBtn");
-				//TODO あそびかた画面の呼び出しを書く
+				// TODO あそびかた画面の呼び出しを書く
 			}
 		});
 
