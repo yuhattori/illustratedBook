@@ -1,7 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-
+    <dimen name="activity_horizontal_margin">16.0dip</dimen>
+    <dimen name="activity_vertical_margin">16.0dip</dimen>
+    <dimen name="setting_title_height">50.0dip</dimen>
+    <dimen name="setting_headings_height">50.0dip</dimen>
+    <dimen name="setting_subheadings_height">40.0dip</dimen>
+    <dimen name="setting_icon_height">50.0dip</dimen>
+    <dimen name="setting_seekbar_width_padding">10.0dip</dimen>
+    <dimen name="setting_kugiri_height_padding">10.0dip</dimen>
 </resources>
