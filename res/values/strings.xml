@@ -7,5 +7,6 @@
     <string name="startTxt">はじめから</string>
     <string name="continueTxt">つづきから</string>
     <string name="test">テスト</string>
+    <string name="image_not_found">NO IMAGE</string>
 
 </resources>
