@@ -19,6 +19,7 @@
             android:layout_width="fill_parent"
             android:layout_height="@+dimen/setting_title_height"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/image_error_msg"
             android:scaleType="centerInside"
             android:src="@drawable/asobikatatitle" />
 
@@ -33,6 +34,7 @@
                 android:layout_height="@+dimen/setting_headings_height"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1.0"
+                android:contentDescription="@string/image_error_msg"
                 android:src="@drawable/ongaku" />
 
             <LinearLayout
@@ -73,6 +75,7 @@
                     android:layout_width="0.0dip"
                     android:layout_height="@+dimen/setting_headings_height"
                     android:layout_weight="4.0"
+                    android:contentDescription="@string/image_error_msg"
                     android:src="@drawable/yomuhayasa" />
 
                 <LinearLayout
@@ -99,6 +102,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
+                        android:contentDescription="@string/image_error_msg"
                         android:src="@drawable/yukkuri" />
                 </RelativeLayout>
 
@@ -113,6 +117,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
+                        android:contentDescription="@string/image_error_msg"
                         android:src="@drawable/hayaku" />
                 </RelativeLayout>
             </LinearLayout>
@@ -130,6 +135,7 @@
             android:layout_width="fill_parent"
             android:layout_height="0.0dip"
             android:layout_weight="1.0"
+            android:contentDescription="@string/image_error_msg"
             android:paddingBottom="@+dimen/setting_kugiri_height_padding"
             android:paddingTop="@+dimen/setting_kugiri_height_padding"
             android:src="@drawable/kugiri" />
@@ -146,7 +152,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="@+dimen/setting_headings_height"
                 android:adjustViewBounds="false"
-                android:paddingRight="80.0dip"
+                android:contentDescription="@string/image_error_msg"
                 android:src="@drawable/pagewomekurou" />
 
             <LinearLayout
@@ -158,13 +164,15 @@
                     android:id="@+id/flick_fig"
                     android:layout_width="wrap_content"
                     android:layout_height="@+dimen/setting_icon_height"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    android:contentDescription="@string/image_error_msg" />
 
                 <ImageView
                     android:id="@+id/flick_title"
                     android:layout_width="wrap_content"
                     android:layout_height="@+dimen/setting_subheadings_height"
                     android:layout_gravity="center_vertical"
+                    android:contentDescription="@string/image_error_msg"
                     android:src="@drawable/migikarahidari" />
             </LinearLayout>
 
@@ -177,7 +185,8 @@
                     android:id="@+id/tap_fig"
                     android:layout_width="wrap_content"
                     android:layout_height="@+dimen/setting_icon_height"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    android:contentDescription="@string/image_error_msg" />
 
                 <ImageView
                     android:id="@+id/tap_title"
@@ -185,6 +194,7 @@
                     android:layout_height="@+dimen/setting_subheadings_height"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1.0"
+                    android:contentDescription="@string/image_error_msg"
                     android:src="@drawable/tap" />
 
                 <LinearLayout
@@ -206,6 +216,7 @@
                 android:id="@+id/automode_title"
                 android:layout_width="wrap_content"
                 android:layout_height="@+dimen/setting_headings_height"
+                android:contentDescription="@string/image_error_msg"
                 android:src="@drawable/jidoudepage" />
 
             <LinearLayout
@@ -217,13 +228,15 @@
                 <ImageView
                     android:id="@+id/longtap_fig"
                     android:layout_width="wrap_content"
-                    android:layout_height="@+dimen/setting_icon_height" />
+                    android:layout_height="@+dimen/setting_icon_height"
+                    android:contentDescription="@string/image_error_msg" />
 
                 <ImageView
                     android:id="@+id/longtap_title"
                     android:layout_width="wrap_content"
                     android:layout_height="80.0dip"
                     android:adjustViewBounds="true"
+                    android:contentDescription="@string/image_error_msg"
                     android:src="@drawable/nagaoshi" />
             </LinearLayout>
         </LinearLayout>
@@ -238,6 +251,7 @@
                 android:id="@+id/hide_window_title"
                 android:layout_width="wrap_content"
                 android:layout_height="@+dimen/setting_headings_height"
+                android:contentDescription="@string/image_error_msg"
                 android:paddingRight="80.0dip"
                 android:src="@drawable/jiwomienaku" />
 
@@ -251,12 +265,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@+dimen/setting_icon_height"
                     android:layout_gravity="center_vertical"
+                    android:contentDescription="@string/image_error_msg"
                     android:paddingLeft="10.0dip" />
 
                 <ImageView
                     android:id="@+id/downflick_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/image_error_msg"
                     android:src="@drawable/uekarashita" />
             </LinearLayout>
         </LinearLayout>
