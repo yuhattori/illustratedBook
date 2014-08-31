@@ -91,7 +91,9 @@ public class TopFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, "on click configBtn");
-				// TODO あそびかた画面の呼び出しを書く
+				ConfigDialogFragment cDialog = new ConfigDialogFragment();
+				cDialog.show(getFragmentManager(), "ConfigDialogFragment");
+				
 			}
 		});
 
