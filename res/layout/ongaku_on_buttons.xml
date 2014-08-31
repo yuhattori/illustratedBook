@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true" android:drawable="@drawable/dasu_on" />
-    <item android:drawable="@drawable/dasu_off" />
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:state_pressed="true"
+        android:drawable="@+drawable/hajimekara_on">
+    </item>
+    <item
+        android:drawable="@+drawable/hajimekara_off">
+    </item>
 </selector>

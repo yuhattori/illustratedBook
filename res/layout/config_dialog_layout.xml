@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:id="@+id/scroll_view"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/activity_vertical_margin"
+    android:layout_marginBottom="@+dimen/activity_vertical_margin"
     android:fadeScrollbars="false"
     android:fillViewport="true" >
 
-        <LinearLayout
+    <LinearLayout
         android:id="@+id/setting_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -16,7 +17,7 @@
         <ImageView
             android:id="@+id/asobikata_title"
             android:layout_width="fill_parent"
-            android:layout_height="@dimen/setting_title_height"
+            android:layout_height="@+dimen/setting_title_height"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
             android:src="@drawable/asobikatatitle" />
@@ -29,7 +30,7 @@
             <ImageView
                 android:id="@+id/ongaku_title"
                 android:layout_width="0.0dip"
-                android:layout_height="@dimen/setting_headings_height"
+                android:layout_height="@+dimen/setting_headings_height"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1.0"
                 android:src="@drawable/ongaku" />
@@ -70,7 +71,7 @@
                 <ImageView
                     android:id="@+id/speed_title"
                     android:layout_width="0.0dip"
-                    android:layout_height="@dimen/setting_headings_height"
+                    android:layout_height="@+dimen/setting_headings_height"
                     android:layout_weight="4.0"
                     android:src="@drawable/yomuhayasa" />
 
@@ -120,8 +121,8 @@
                 android:id="@+id/speed_seekbar"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/setting_seekbar_width_padding"
-                android:paddingRight="@dimen/setting_seekbar_width_padding" />
+                android:paddingLeft="@+dimen/setting_seekbar_width_padding"
+                android:paddingRight="@+dimen/setting_seekbar_width_padding" />
         </LinearLayout>
 
         <ImageView
@@ -129,8 +130,8 @@
             android:layout_width="wrap_content"
             android:layout_height="0.0dip"
             android:layout_weight="1.0"
-            android:paddingBottom="@dimen/setting_kugiri_height_padding"
-            android:paddingTop="@dimen/setting_kugiri_height_padding"
+            android:paddingBottom="@+dimen/setting_kugiri_height_padding"
+            android:paddingTop="@+dimen/setting_kugiri_height_padding"
             android:src="@drawable/kugiri" />
 
         <LinearLayout
@@ -143,7 +144,7 @@
             <ImageView
                 android:id="@+id/next_page_title"
                 android:layout_width="fill_parent"
-                android:layout_height="@dimen/setting_headings_height"
+                android:layout_height="@+dimen/setting_headings_height"
                 android:adjustViewBounds="false"
                 android:paddingRight="80.0dip"
                 android:src="@drawable/pagewomekurou" />
@@ -156,13 +157,13 @@
                 <ImageView
                     android:id="@+id/flick_fig"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/setting_icon_height"
+                    android:layout_height="@+dimen/setting_icon_height"
                     android:layout_gravity="center_vertical" />
 
                 <ImageView
                     android:id="@+id/flick_title"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/setting_subheadings_height"
+                    android:layout_height="@+dimen/setting_subheadings_height"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/migikarahidari" />
             </LinearLayout>
@@ -175,13 +176,13 @@
                 <ImageView
                     android:id="@+id/tap_fig"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/setting_icon_height"
+                    android:layout_height="@+dimen/setting_icon_height"
                     android:layout_gravity="center_vertical" />
 
                 <ImageView
                     android:id="@+id/tap_title"
                     android:layout_width="0.0dip"
-                    android:layout_height="@dimen/setting_subheadings_height"
+                    android:layout_height="@+dimen/setting_subheadings_height"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1.0"
                     android:src="@drawable/tap" />
@@ -204,7 +205,7 @@
             <ImageView
                 android:id="@+id/automode_title"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/setting_headings_height"
+                android:layout_height="@+dimen/setting_headings_height"
                 android:src="@drawable/jidoudepage" />
 
             <LinearLayout
@@ -216,7 +217,7 @@
                 <ImageView
                     android:id="@+id/longtap_fig"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/setting_icon_height" />
+                    android:layout_height="@+dimen/setting_icon_height" />
 
                 <ImageView
                     android:id="@+id/longtap_title"
@@ -236,7 +237,7 @@
             <ImageView
                 android:id="@+id/hide_window_title"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/setting_headings_height"
+                android:layout_height="@+dimen/setting_headings_height"
                 android:paddingRight="80.0dip"
                 android:src="@drawable/jiwomienaku" />
 
@@ -248,7 +249,7 @@
                 <ImageView
                     android:id="@+id/downflick_fig"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/setting_icon_height"
+                    android:layout_height="@+dimen/setting_icon_height"
                     android:layout_gravity="center_vertical"
                     android:paddingLeft="10.0dip" />
 
@@ -260,6 +261,5 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-
 
 </ScrollView>
