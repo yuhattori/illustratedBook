@@ -126,7 +126,7 @@
 
         <ImageView
             android:id="@+id/kugiri"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="0.0dip"
             android:layout_weight="1.0"
             android:paddingBottom="@dimen/setting_kugiri_height_padding"
@@ -142,7 +142,7 @@
 
             <ImageView
                 android:id="@+id/next_page_title"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="@dimen/setting_headings_height"
                 android:adjustViewBounds="false"
                 android:paddingRight="80.0dip"
