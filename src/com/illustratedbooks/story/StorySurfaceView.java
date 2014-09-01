@@ -228,7 +228,7 @@ public class StorySurfaceView extends SurfaceView implements
 	 * メッセージウィンドウにCSVに書かれているテキストをすべて表示させる
 	 */
 	private void setMessege() {
-		mNowPrintMsgNum = mCSVdata.get(mCSVColumnNo)[TEXT].length();
+		mNowPrintMsgNum = mCSVdata.get(mCSVColumnNo)[TEXT].length();//すべて表示させるため、現在表示しているメッセージの文字数を合わせる
 		setMessege(MSG_ALL);
 	}
 
