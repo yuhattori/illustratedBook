@@ -19,6 +19,7 @@ public class ConfigDialogFragment extends DialogFragment {
 
 	private final int MAX_MSG_SPD = 200;
 	private SharedPreferences pref;
+	private int mNowReadingSp;
 
 	public Dialog onCreateDialog(Bundle bundle) {
 		pref = getActivity().getSharedPreferences("configdata", 0);// configデータの取得
@@ -29,8 +30,8 @@ public class ConfigDialogFragment extends DialogFragment {
 		// SeekBarの設定
 		SeekBar seekbar = (SeekBar) dialog.findViewById(R.id.speed_seekbar);
 		seekbar.setMax(-1 + MAX_MSG_SPD);
-		int nowReadingSp = pref.getInt("readingSpd", 100);
-		seekbar.setProgress(nowReadingSp);
+		mNowReadingSp = MAX_MSG_SPD - pref.getInt("readingSpd", 100);
+		seekbar.setProgress(mNowReadingSp);
 		seekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
@@ -43,13 +44,14 @@ public class ConfigDialogFragment extends DialogFragment {
 
 			public void onStopTrackingTouch(SeekBar seekBar) {
 				// ツマミを離したときに呼ばれる
-				Log.d("ConfigDialogFragment", "設定値:" + seekBar.getProgress());
-				Toast.makeText(getActivity(), "設定値:" + seekBar.getProgress(),
+				mNowReadingSp = MAX_MSG_SPD - seekBar.getProgress();
+				Log.d("ConfigDialogFragment", "設定値:" + mNowReadingSp + " ms");
+				Toast.makeText(getActivity(), "設定値:" + mNowReadingSp + " ms",
 						Toast.LENGTH_SHORT).show();
-				
+
 				// データ保存
 				Editor editor = pref.edit();
-				editor.putInt("readingSpd", seekBar.getProgress());
+				editor.putInt("readingSpd", mNowReadingSp);
 				editor.commit();
 			}
 		});
