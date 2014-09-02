@@ -44,6 +44,8 @@ public class ConfigDialogFragment extends DialogFragment {
 
 			public void onStopTrackingTouch(SeekBar seekBar) {
 				// ツマミを離したときに呼ばれる
+				Log.d("ConfigDialogFragment", "文字送りスピード設定値:" + (MAX_MSG_SPD - seekBar.getProgress())
+						+ " ms");
 				if (mNowReadingSp < (MAX_MSG_SPD - seekBar.getProgress())) {
 					Toast.makeText(getActivity(), "よむはやさがゆっくりになりました",
 							Toast.LENGTH_SHORT).show();
@@ -53,11 +55,9 @@ public class ConfigDialogFragment extends DialogFragment {
 				}
 
 				mNowReadingSp = MAX_MSG_SPD - seekBar.getProgress();
-				Log.d("ConfigDialogFragment", "文字送りスピード設定値:" + mNowReadingSp
-						+ " ms");
+
 				// Toast.makeText(getActivity(), "文字送りスピード設定値:" + mNowReadingSp
-				// + " ms",
-				// Toast.LENGTH_SHORT).show();
+				// + " ms", Toast.LENGTH_SHORT).show();
 
 				// データ保存
 				Editor editor = pref.edit();
