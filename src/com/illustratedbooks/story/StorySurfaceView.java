@@ -221,7 +221,7 @@ public class StorySurfaceView extends SurfaceView implements
 				holder.unlockCanvasAndPost(mCanvas);
 			}
 
-		}, 0, mMsgSpd, TimeUnit.MILLISECONDS);// 100ms後にINTERVAL_PERIODの間隔で更新
+		}, 0, mMsgSpd, TimeUnit.MILLISECONDS);// mMsgSpdの間隔で更新
 	}
 
 	/**
