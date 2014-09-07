@@ -33,6 +33,7 @@ public class StorySurfaceView extends SurfaceView implements
 	private static final String TAG = StorySurfaceView.class.getSimpleName();
 	Context mContext;
 	Canvas mCanvas;
+	StoryDisplayData mStoryDisplayData;
 
 	/* 描写関連 */
 	private ScheduledExecutorService mDrowTask;// 表示用スレッド
@@ -49,19 +50,13 @@ public class StorySurfaceView extends SurfaceView implements
 	// 背景
 	private String mBgPath; // 背景画像のパス
 	private Bitmap mBgFig;// 背景画像
-	private int mDp_w;// ディスプレイの幅
-	private int mDp_h;// ディスプレイの高さ
-	private int mDrow_w;// 背景を実際に表示するときの画像の幅
-	private int mDrow_h;// 背景を実際に表示するときの画像の高さ
-	private int mDrowPos_l = 0;// 背景のx軸の表示位置
-	private int mDrowPos_t = 0;// 背景のy軸の表示位置
+
 	// テキスト
 	private Paint mPaintf; // テキストのプロパティ
 	private int FONT_SIZE = 32;// フォントのサイズ
 	// メッセージウィンドウ
 	public final static String MSGWIN_PATH = "window.jpg";// ウィンドウのレイアウト
 	private Bitmap mMsgWin;// ウィンドウ画像
-	private int mPadding;// 背景のy軸の表示位置
 	private Paint mPaintw; // メッセージウィンドウのプロパティ
 	private final int ALPHA = 140;// 透過度
 
@@ -170,9 +165,14 @@ public class StorySurfaceView extends SurfaceView implements
 					mBgPath = "background/"
 							+ mCSVdata.get(mCSVColumnNo)[BACK_GROUND];
 					try {
-						mBgFig = resizeBg(mContext, BitmapFactory
-								.decodeStream(getResources().getAssets().open(
-										mBgPath)));// リサイズ済背景画像
+						mBgFig = BitmapFactory.decodeStream(getResources()
+								.getAssets().open(mBgPath));
+						mStoryDisplayData = new StoryDisplayData(mContext,
+								mBgFig, StoryDisplayData.HORIZONTAL_LAYOUT);
+						mBgFig = Bitmap.createScaledBitmap(mBgFig,
+								mStoryDisplayData.getDrownBGWidth(),
+								mStoryDisplayData.getDrownBGHeight(), true);
+
 					} catch (IOException e) {
 						Log.e(TAG, "failed reading background  image file");
 						Toast.makeText(getContext(),
@@ -187,9 +187,10 @@ public class StorySurfaceView extends SurfaceView implements
 					try {
 						mMsgWin = BitmapFactory.decodeStream(getResources()
 								.getAssets().open(MSGWIN_PATH));
-						mPadding = mDrow_w / 30;
-						mMsgWin = Bitmap.createScaledBitmap(mMsgWin, mDrow_w
-								- mPadding * 2, mDrow_h / 4, true);
+						mMsgWin = Bitmap.createScaledBitmap(mMsgWin,
+								mStoryDisplayData.getDrownMSGWidth(),
+								mStoryDisplayData.getDrownMSGHeight(), true);
+
 						mPaintw = new Paint();
 						mPaintw.setAlpha(ALPHA);// 透過度を設定
 
@@ -201,13 +202,14 @@ public class StorySurfaceView extends SurfaceView implements
 				}
 
 				// 描画処理
-				mCanvas.drawBitmap(mBgFig, mDrowPos_l, mDrowPos_t, null);// 背景を表示
+				mCanvas.drawBitmap(mBgFig, mStoryDisplayData.getDrownPosBG_x(),
+						mStoryDisplayData.getDrownPosBG_y(), null);// 背景を表示
 
 				if (!mCSVdata.get(mCSVColumnNo)[TEXT].equals("null")
 						&& mWindowFlag) {
-					mCanvas.drawBitmap(mMsgWin, mDrowPos_l + mPadding,
-							mDrowPos_t + mDrow_h * 3 / 4 - mPadding * 2,
-							mPaintw);// メッセージウィンドウを表示
+					mCanvas.drawBitmap(mMsgWin,
+							mStoryDisplayData.getDrownPosMSG_x(),
+							mStoryDisplayData.getDrownPosMSG_y(), mPaintw);// メッセージウィンドウを表示
 
 					if (mNowPrintMsgNum != mCSVdata.get(mCSVColumnNo)[TEXT]
 							.length() && mMsgSpd != MAXIMUM_MSG_SPEED) {
@@ -241,17 +243,17 @@ public class StorySurfaceView extends SurfaceView implements
 	 * 
 	 */
 	private void setMessege(int charNum) {
+		int padding = mStoryDisplayData.getDrownMSGWidth() / 30;
 		mPaintf = new Paint();
 		mPaintf.setColor(Color.WHITE);
 		mPaintf.setTextSize(FONT_SIZE);
 		String message = mCSVdata.get(mCSVColumnNo)[TEXT];
 		if (charNum == MSG_ALL)
 			charNum = message.length();// 全文字表示の場合
-		int maxWidth = mDrow_w - mPadding * 2;// paddingを含めたメッセージウィンドウの幅で改行する。
+		int maxWidth = mStoryDisplayData.getDrownMSGWidth() - padding;// メッセージウィンドウの幅で改行する。
 		int lineBreakPoint = Integer.MAX_VALUE;// 仮に、最大値を入れておく
 		int currentIndex = 0;// 現在、原文の何文字目まで改行が入るか確認したかを保持する
-		int linePointY = mDrowPos_t + mDrow_h * 3 / 4 - mPadding * 2
-				+ FONT_SIZE;// 文字を描画するY位置。改行の度にインクリメントする。
+		int linePointY = mStoryDisplayData.getDrownPosMSG_y() + padding + FONT_SIZE;// 文字を描画するY位置。改行の度にインクリメントする。
 
 		while (charNum != 0) {
 			String mesureString = message.substring(currentIndex);// 未だ表示されていない文字列のみ抽出
@@ -263,7 +265,7 @@ public class StorySurfaceView extends SurfaceView implements
 				if (charNum < line.length())
 					line = line.substring(0, charNum);
 				charNum -= line.length();
-				mCanvas.drawText(line, mDrowPos_l + mPadding, linePointY,
+				mCanvas.drawText(line, mStoryDisplayData.getDrownPosMSG_x() + padding, linePointY,
 						mPaintf);
 				linePointY += FONT_SIZE;// 改行後の位置
 				currentIndex += lineBreakPoint;// 次の表示する一文の開始位置
@@ -308,41 +310,6 @@ public class StorySurfaceView extends SurfaceView implements
 			String[] array = str.split(",");
 			mCSVdata.add(array);
 		}
-	}
-
-	/**
-	 * 背景に使用する画像のリサイズを行う
-	 * 
-	 * @return Bitmap
-	 */
-	private Bitmap resizeBg(Context context, Bitmap bmp) {
-		/* 画像のリサイズ */
-		// WindowManager取得
-		WindowManager wm = (WindowManager) context
-				.getSystemService(Context.WINDOW_SERVICE);
-		Display dp = wm.getDefaultDisplay();
-		// ディスプレイサイズ取得
-		Point size = new Point();
-		dp.getSize(size);
-		mDp_w = size.x;
-		mDp_h = size.y;
-
-		// 背景画像のサイズを画面サイズに初期化
-		mDrow_w = mDp_w;
-		mDrow_h = mDp_h;
-
-		if (bmp.getHeight() >= bmp.getWidth()) {
-			// 縦長の画像の場合
-			mDrow_w = mDp_h * bmp.getWidth() / bmp.getHeight(); // リサイズ画像の幅
-			mDrowPos_l = (mDp_w - mDrow_w) / 2; // 描画始点のx座標
-			mDrowPos_t = 0;// 描写するx軸を初期化
-		} else {
-			// 横長の画像の場合
-			mDrow_h = mDp_w * bmp.getHeight() / bmp.getWidth(); // リサイズ画像の幅
-			mDrowPos_t = (mDp_h - mDrow_h) / 2; // 描画始点のx座標
-			mDrowPos_l = 0;// 描写するx軸を初期化
-		}
-		return Bitmap.createScaledBitmap(bmp, mDrow_w, mDrow_h, true);
 	}
 
 	@Override

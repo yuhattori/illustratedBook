@@ -51,6 +51,7 @@ public class StoryDisplayData {
 
 		// ディスプレイデータを取得
 		setDisplayData(context);
+		setDefaultPaddingMSG();
 
 		switch (layout) {
 		case VERTICAL_LAYOUT:
@@ -87,7 +88,7 @@ public class StoryDisplayData {
 		}
 		/* MessageWindow */
 		mDrownMSG_w = mDp_w / 2;// メッセージウィンドウの幅を設定
-		mDrownMSG_h = mDp_h / 5;// メッセージウィンドウの高さを設定
+		mDrownMSG_h = mDp_h / 4;// メッセージウィンドウの高さを設定
 		mDrownPosMSG_x = (mDp_w - mDrownMSG_w) / 2;// 画面に対して中央に来るように設定
 		mDrownPosMSG_y = (mDp_h - mDrownMSG_h) - mPaddingMSG;// 画面下からpadding分空いた位置に設定
 	}
@@ -99,14 +100,20 @@ public class StoryDisplayData {
 	 *            背景画像データ
 	 */
 	public void setHorizontalLayoutMode(Bitmap bmp) {
-		double perMwdInDisplay = 1 / 3;// 画面に対してのメッセージウィンドが閉める割合
+		double perMwdInDisplay = 1.0d / 3.0d;// 画面に対してのメッセージウィンドが閉める割合
+		/* MessageWindow */
+		mDrownMSG_w = (int) (mDp_w * perMwdInDisplay);// メッセージウィンドウの幅を設定
+		mDrownMSG_h = mDp_h;// メッセージウィンドウの高さを設定
+		mDrownPosMSG_x = 0;
+		mDrownPosMSG_y = 0;
+
 		/* BackGroud */
 		if (bmp.getHeight() >= bmp.getWidth()) {
 			// 縦長の画像の場合
 			mDrownBG_w = mDp_h * (bmp.getWidth() / bmp.getHeight());// 背景画像の幅
 			mDrownBG_h = mDp_h;// 背景画像の高さ
-			mDrownPosBG_x = (int) (mDp_w * perMwdInDisplay)
-					+ ((mDp_w - mDrownMSG_w) / 2);// 描画始点のx座標
+			mDrownPosBG_x = (int) mDrownMSG_w
+					+ ((mDp_w - mDrownMSG_w) - mDrownBG_w)/2;// 描画始点のx座標
 			mDrownPosBG_y = 0;// 描画始点のy座標
 		} else {
 			// 横長の画像の場合
@@ -115,11 +122,6 @@ public class StoryDisplayData {
 			mDrownPosBG_x = (int) (mDp_w * perMwdInDisplay);// / 描画始点のx座標
 			mDrownPosBG_y = (mDp_h - mDrownBG_h) / 2;// 描画始点のy座標
 		}
-		/* MessageWindow */
-		mDrownMSG_w = (int) (mDp_w * perMwdInDisplay);// メッセージウィンドウの幅を設定
-		mDrownMSG_h = mDp_h;// メッセージウィンドウの高さを設定
-		mDrownPosMSG_x = 0;
-		mDrownPosMSG_y = 0;
 	}
 
 	public void setDisplayData(Context context) {
@@ -138,7 +140,7 @@ public class StoryDisplayData {
 	 * メッセージウィンドのデフォルトのpaddeingを設定する。
 	 */
 	public void setDefaultPaddingMSG() {
-		this.mPaddingMSG = mDp_w / 50;
+		this.mPaddingMSG = mDp_w / 30;
 	}
 
 	/* setter and getter */
