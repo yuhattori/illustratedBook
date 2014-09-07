@@ -116,14 +116,13 @@ public class StorySurfaceView extends SurfaceView implements
 		mContext = context;
 		Log.d(TAG, "You tought " + clickedBtn + " to come this screen.");
 		init();
-		
+
 		/* 保存データを読み込む。前回の表示していたROWの読み込み */
 		SharedPreferences sPref = mContext.getSharedPreferences("savedata"
 				+ CSV_FILE_NAME, Context.MODE_PRIVATE);
 		mCSVColumnNo = Integer.valueOf(sPref.getString("savedRowNo", "1"));
 		Log.d(TAG, "RowNo of Saved data is " + mCSVColumnNo);
-		
-		
+
 	}
 
 	/**
@@ -132,12 +131,13 @@ public class StorySurfaceView extends SurfaceView implements
 	private void init() {
 		SurfaceHolder surfaceHolder = getHolder();
 		surfaceHolder.addCallback(this);
-		
-		/*設定データの読み込み*/
-		SharedPreferences cPref = mContext.getSharedPreferences("configdata", 0);
-		setMsgSpd(cPref.getInt("readingSpd", 100));//メッセージスピードの設定
-		if(mMsgSpd < MAXIMUM_MSG_SPEED)
-			setMsgSpd(MAXIMUM_MSG_SPEED);//最速表示の場合
+
+		/* 設定データの読み込み */
+		SharedPreferences cPref = mContext
+				.getSharedPreferences("configdata", 0);
+		setMsgSpd(cPref.getInt("readingSpd", 100));// メッセージスピードの設定
+		if (mMsgSpd < MAXIMUM_MSG_SPEED)
+			setMsgSpd(MAXIMUM_MSG_SPEED);// 最速表示の場合
 
 		// CSVファイルの情報の読み込み
 		try {
@@ -183,7 +183,7 @@ public class StorySurfaceView extends SurfaceView implements
 				}
 
 				// *メッセージウィンドウの画像設定*//
-				if (mMsgWin == null)
+				if (mMsgWin == null) {
 					try {
 						mMsgWin = BitmapFactory.decodeStream(getResources()
 								.getAssets().open(MSGWIN_PATH));
@@ -198,6 +198,7 @@ public class StorySurfaceView extends SurfaceView implements
 						Log.e(TAG, "failed reading messege window file");
 						e.printStackTrace();
 					}
+				}
 
 				// 描画処理
 				mCanvas.drawBitmap(mBgFig, mDrowPos_l, mDrowPos_t, null);// 背景を表示
@@ -228,7 +229,7 @@ public class StorySurfaceView extends SurfaceView implements
 	 * メッセージウィンドウにCSVに書かれているテキストをすべて表示させる
 	 */
 	private void setMessege() {
-		mNowPrintMsgNum = mCSVdata.get(mCSVColumnNo)[TEXT].length();//すべて表示させるため、現在表示しているメッセージの文字数を合わせる
+		mNowPrintMsgNum = mCSVdata.get(mCSVColumnNo)[TEXT].length();// すべて表示させるため、現在表示しているメッセージの文字数を合わせる
 		setMessege(MSG_ALL);
 	}
 
@@ -543,6 +544,7 @@ public class StorySurfaceView extends SurfaceView implements
 
 	/**
 	 * 現在オートモード中かを判断する
+	 * 
 	 * @return mAutoModeFlag ON :true OFF : false
 	 */
 	public Boolean isAutoMode() {
