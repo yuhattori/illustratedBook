@@ -31,9 +31,10 @@ import android.widget.Toast;
 public class StorySurfaceView extends SurfaceView implements
 		SurfaceHolder.Callback {
 	private static final String TAG = StorySurfaceView.class.getSimpleName();
-	Context mContext;
-	Canvas mCanvas;
-	StoryDisplayData mStoryDisplayData;
+	private Context mContext;
+	private Canvas mCanvas;
+	private StoryDisplayData mStoryDisplayData;
+	private int mLayout = StoryDisplayData.HORIZONTAL_LAYOUT;//デフォルトでHORIZONTAL_LAYOUT
 
 	/* 描写関連 */
 	private ScheduledExecutorService mDrowTask;// 表示用スレッド
@@ -168,7 +169,7 @@ public class StorySurfaceView extends SurfaceView implements
 						mBgFig = BitmapFactory.decodeStream(getResources()
 								.getAssets().open(mBgPath));
 						mStoryDisplayData = new StoryDisplayData(mContext,
-								mBgFig, StoryDisplayData.HORIZONTAL_LAYOUT);
+								mBgFig, mLayout);
 						mBgFig = Bitmap.createScaledBitmap(mBgFig,
 								mStoryDisplayData.getDrownBGWidth(),
 								mStoryDisplayData.getDrownBGHeight(), true);
@@ -176,7 +177,7 @@ public class StorySurfaceView extends SurfaceView implements
 					} catch (IOException e) {
 						Log.e(TAG, "failed reading background  image file");
 						Toast.makeText(getContext(),
-								"failed reading background image file", 0)
+								"failed reading background image file", Toast.LENGTH_SHORT)
 								.show();
 						e.printStackTrace();
 					}
@@ -253,7 +254,8 @@ public class StorySurfaceView extends SurfaceView implements
 		int maxWidth = mStoryDisplayData.getDrownMSGWidth() - padding;// メッセージウィンドウの幅で改行する。
 		int lineBreakPoint = Integer.MAX_VALUE;// 仮に、最大値を入れておく
 		int currentIndex = 0;// 現在、原文の何文字目まで改行が入るか確認したかを保持する
-		int linePointY = mStoryDisplayData.getDrownPosMSG_y() + padding + FONT_SIZE;// 文字を描画するY位置。改行の度にインクリメントする。
+		int linePointY = mStoryDisplayData.getDrownPosMSG_y() + padding
+				+ FONT_SIZE;// 文字を描画するY位置。改行の度にインクリメントする。
 
 		while (charNum != 0) {
 			String mesureString = message.substring(currentIndex);// 未だ表示されていない文字列のみ抽出
@@ -265,8 +267,8 @@ public class StorySurfaceView extends SurfaceView implements
 				if (charNum < line.length())
 					line = line.substring(0, charNum);
 				charNum -= line.length();
-				mCanvas.drawText(line, mStoryDisplayData.getDrownPosMSG_x() + padding, linePointY,
-						mPaintf);
+				mCanvas.drawText(line, mStoryDisplayData.getDrownPosMSG_x()
+						+ padding, linePointY, mPaintf);
 				linePointY += FONT_SIZE;// 改行後の位置
 				currentIndex += lineBreakPoint;// 次の表示する一文の開始位置
 			}
@@ -340,7 +342,10 @@ public class StorySurfaceView extends SurfaceView implements
 				} else {
 					// シナリオを一つ進める
 					nextCoulumn();
-					mNowPrintMsgNum = 0;
+					if (!isLastColumn()) {
+						//再終行でないとき
+						mNowPrintMsgNum = 0;
+					}
 				}
 				break;
 
@@ -413,7 +418,7 @@ public class StorySurfaceView extends SurfaceView implements
 	 * 次の行へ移動
 	 */
 	private void nextCoulumn() {
-		if (mCSVColumnNo < mCSVdata.size() - 1) {
+		if (isLastColumn()) {
 			// 最後でなかった場合
 			mCSVColumnNo += 1;// シナリオを一つ進める
 			mWindowFlag = true;// ロングタップのウィンドウフラグの初期化
@@ -516,5 +521,21 @@ public class StorySurfaceView extends SurfaceView implements
 	 */
 	public Boolean isAutoMode() {
 		return mAutoModeFlag;
+	}
+	
+	/**
+	 * 最終行かどうかを判定する
+	 * @return
+	 */
+	public boolean isLastColumn() {
+		return mCSVColumnNo < mCSVdata.size() - 1;
+	}
+
+	public int getLayout() {
+		return mLayout;
+	}
+
+	public void setLayout(int mLayout) {
+		this.mLayout = mLayout;
 	}
 }
