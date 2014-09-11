@@ -61,10 +61,6 @@ public class StoryMessegeWindowFragment extends Fragment {
 		public void surfaceChanged(SurfaceHolder holder, int format, int width,
 				int height) {
 			// TODO 自動生成されたメソッド・スタブ
-			int a = width;
-			int b = height;
-			b = a;
-			a = b;
 		}
 
 		@Override
