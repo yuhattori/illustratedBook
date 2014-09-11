@@ -175,10 +175,12 @@ public class StoryMessegeWindowFragment extends Fragment {
 
 		@Override
 		public void surfaceDestroyed(SurfaceHolder holder) {
-			// TODO 自動生成されたメソッド・スタブ
-
+			if (!mDrowTask.isShutdown()) {
+				// スレッドが途中であればシャットダウンする
+				mDrowTask.shutdown();
+				mDrowTask = null;
+			}
 		}
-
 	}
 
 	public String getmText() {
