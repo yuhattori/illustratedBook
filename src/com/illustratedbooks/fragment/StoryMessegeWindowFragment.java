@@ -1,24 +1,18 @@
 package com.illustratedbooks.fragment;
 
-import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.illustratedbooks.R;
-import com.illustratedbooks.story.StoryDisplayData;
-import com.illustratedbooks.story.StorySurfaceView;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -27,8 +21,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 public class StoryMessegeWindowFragment extends Fragment {
 	private static final String TAG = StoryMessegeWindowFragment.class
@@ -45,9 +37,6 @@ public class StoryMessegeWindowFragment extends Fragment {
 
 	/* 描写関連 */
 	private ScheduledExecutorService mDrowTask;// 表示用スレッド
-	private ScheduledExecutorService mAutoModeTask;// オートモード用スレッド
-	private Boolean mAutoModeFlag = false;// オートモード用のフラグ
-	private int mAutoModeSp = 1000;// オートモードのスピード
 	private static int MSG_ALL = -1;// 文字送りをせずすべてを表示させるときに使用
 	public static final Boolean ON = true;// オートモードON
 	public static final Boolean OFF = false;// オートモードOFF
@@ -57,9 +46,6 @@ public class StoryMessegeWindowFragment extends Fragment {
 
 	// メッセージウィンドウ
 	public final static String MSGWIN_PATH = "window.jpg";// ウィンドウのレイアウト
-	private Bitmap mMsgWin;// ウィンドウ画像
-	private Paint mPaintw; // メッセージウィンドウのプロパティ
-	private final static int ALPHA = 140;// 透過度
 
 	// テキスト
 	private int FONT_SIZE = 32;// フォントのサイズ
@@ -80,11 +66,13 @@ public class StoryMessegeWindowFragment extends Fragment {
 		FrameLayout layout = (FrameLayout) mView
 				.findViewById(R.id.messege_window_framelayout);
 
+		// メッセージウィンドウの背景を設定
 		ImageView imgV = new ImageView(getActivity());
 		imgV.setScaleType(ScaleType.FIT_XY);
 		imgV.setImageResource(R.drawable.window);
 		layout.addView(imgV);
-		
+
+		// SurfaceViewを設定
 		MessegeSurfaceView sf = new MessegeSurfaceView(getActivity());
 		layout.addView(sf);
 		return mView;
@@ -96,15 +84,17 @@ public class StoryMessegeWindowFragment extends Fragment {
 		public MessegeSurfaceView(Context context) {
 			super(context);
 			SurfaceHolder surfaceHolder = getHolder();
+			// 背景を透明に
 			surfaceHolder.setFormat(PixelFormat.TRANSLUCENT);
+			// コールバックを設定
 			surfaceHolder.addCallback(this);
-	        // このViewをトップにする
-	        setZOrderOnTop(true);
+			// このViewをトップにする
+			setZOrderOnTop(true);
 		}
 
 		@Override
 		public void surfaceCreated(final SurfaceHolder holder) {
-			
+
 			// SingleThreadScheduledExecutor による単一 Thread のインターバル実行
 			mDrowTask = Executors.newSingleThreadScheduledExecutor();
 			mDrowTask.scheduleAtFixedRate(new Runnable() {
@@ -113,29 +103,8 @@ public class StoryMessegeWindowFragment extends Fragment {
 				public void run() {
 					// Canvas取得しロックする
 					mCanvas = holder.lockCanvas();
-
-					// *メッセージウィンドウの画像設定*//
-					if (mMsgWin == null) {
-						try {
-							mMsgWin = BitmapFactory.decodeStream(getResources()
-									.getAssets().open(MSGWIN_PATH));
-							mMsgWin = Bitmap.createScaledBitmap(mMsgWin,
-									mWidth, mHeight, true);
-
-							mPaintw = new Paint();
-							mPaintw.setAlpha(StoryMessegeWindowFragment.ALPHA);// 透過度を設定
-
-						} catch (IOException e) {
-							// TODO ウィンドウ背景画像の読み込みエラー
-							Log.e(TAG, "failed reading messege window file");
-							e.printStackTrace();
-						}
-					}
-
 					// 描画処理
 					if (!mText.equals("null")) {
-						//mCanvas.drawBitmap(mMsgWin, mPointX, mPointY, mPaintw);// メッセージウィンドウを表示
-
 						if (mNowPrintMsgNum != mText.length()
 								&& mMsgSpd != FASTEST_MSG_SPEED) {
 							// 文字送り途中の場合
@@ -143,6 +112,8 @@ public class StoryMessegeWindowFragment extends Fragment {
 						} else {
 							// 文字送り終了の場合　or 最速表示の場合
 							setMessege();
+							// スレッドをシャットダウン
+							mDrowTask.shutdown();
 						}
 					}
 					// LockしたCanvasを解放する
@@ -165,7 +136,6 @@ public class StoryMessegeWindowFragment extends Fragment {
 		 * 
 		 * @param charNo
 		 *            表示する文字数
-		 * 
 		 */
 		private void setMessege(int charNum) {
 			int padding = mWidth / 30;
@@ -179,7 +149,6 @@ public class StoryMessegeWindowFragment extends Fragment {
 			int lineBreakPoint = Integer.MAX_VALUE;// 仮に、最大値を入れておく
 			int currentIndex = 0;// 現在、原文の何文字目まで改行が入るか確認したかを保持する
 			float linePointY = mPointY + padding + FONT_SIZE;// 文字を描画するY位置。改行の度にインクリメントする。
-
 			while (charNum != 0) {
 				String mesureString = message.substring(currentIndex);// 未だ表示されていない文字列のみ抽出
 				lineBreakPoint = paintf.breakText(mesureString, true, maxWidth,
@@ -210,5 +179,29 @@ public class StoryMessegeWindowFragment extends Fragment {
 
 		}
 
+	}
+
+	public String getmText() {
+		return mText;
+	}
+
+	public float getmPointX() {
+		return mPointX;
+	}
+
+	public float getmPointY() {
+		return mPointY;
+	}
+
+	public int getmWidth() {
+		return mWidth;
+	}
+
+	public int getmHeight() {
+		return mHeight;
+	}
+
+	public int getmMsgSpd() {
+		return mMsgSpd;
 	}
 }
