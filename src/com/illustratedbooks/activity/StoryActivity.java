@@ -69,6 +69,8 @@ public class StoryActivity extends FragmentActivity {
 	// テキスト
 	private Paint mPaintf; // テキストのプロパティ
 	private int FONT_SIZE = 32;// フォントのサイズ
+	private String mText;//表示するテキスト
+	
 	// メッセージウィンドウ
 	public final static String MSGWIN_PATH = "window.jpg";// ウィンドウのレイアウト
 	private Bitmap mMsgWin;// ウィンドウ画像
@@ -176,6 +178,10 @@ public class StoryActivity extends FragmentActivity {
 					Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 		}
+		
+		/*テキストを取得*/
+		mText=mCSVdata.get(mCSVColumnNo)[TEXT];
+		
 
 		/* onCreateではレンダリングが終わっていないためここで行う */
 		// フラグメントを入れるレイアウトを取得
@@ -190,16 +196,24 @@ public class StoryActivity extends FragmentActivity {
 		/* StoryBackgroundFragmentを設定 */
 		StoryBackgroundFragment bgf = new StoryBackgroundFragment();
 		// 背景画像を登録
-		Bundle args = new Bundle();  
-		args.putParcelable("BgFig", mBgFig);
-		args.putFloat("pointX", mBgLayout.getX());//backgroundのX座標
-		args.putFloat("pointY", mBgLayout.getY());//backgroundのY座標
-		args.putInt("width", mBgLayout.getWidth());//レイアウトの幅
-		args.putInt("height", mBgLayout.getHeight());//レイアウトの高さ
-		bgf.setArguments(args);
+		Bundle bgBundle = new Bundle();  
+		bgBundle.putParcelable("BgFig", mBgFig);
+		bgBundle.putFloat("pointX", mBgLayout.getX());//backgroundのX座標
+		bgBundle.putFloat("pointY", mBgLayout.getY());//backgroundのY座標
+		bgBundle.putInt("width", mBgLayout.getWidth());//レイアウトの幅
+		bgBundle.putInt("height", mBgLayout.getHeight());//レイアウトの高さ
+		bgf.setArguments(bgBundle);
 
-		/* StoryBackgroundFragmentを設定 */
+		/* StoryMessegeWindowFragmentを設定 */
 		StoryMessegeWindowFragment mwf = new StoryMessegeWindowFragment();
+		Bundle mwBundle = new Bundle();
+		mwBundle.putString("Text", mText);
+		mwBundle.putFloat("pointX", mMsgLayout.getX());//MessegeWindowのX座標
+		mwBundle.putFloat("pointY", mMsgLayout.getY());//MessegeWindowのY座標
+		mwBundle.putInt("width", mMsgLayout.getWidth());//レイアウトの幅
+		mwBundle.putInt("height", mMsgLayout.getHeight());//レイアウトの高さ
+		mwf.setArguments(mwBundle);
+
 
 		// Fragment をスタックに追加する
 		ft.add(mBgLayout.getId(), bgf, BACKGROUND_FLAGMENT);
