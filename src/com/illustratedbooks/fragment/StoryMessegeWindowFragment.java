@@ -122,7 +122,7 @@ public class StoryMessegeWindowFragment extends Fragment {
 
 					// 描画処理
 					if (!mText.equals("null")) {
-						mCanvas.drawBitmap(mMsgWin, mPointX, mPointY, mPaintw);// メッセージウィンドウを表示
+						//mCanvas.drawBitmap(mMsgWin, mPointX, mPointY, mPaintw);// メッセージウィンドウを表示
 
 						if (mNowPrintMsgNum != mText.length()
 								&& mMsgSpd != FASTEST_MSG_SPEED) {
