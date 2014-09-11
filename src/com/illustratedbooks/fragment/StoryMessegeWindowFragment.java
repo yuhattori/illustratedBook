@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -23,7 +24,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -74,8 +77,14 @@ public class StoryMessegeWindowFragment extends Fragment {
 		mWidth = getArguments().getInt("width");// レイアウトの幅の設定
 		mHeight = getArguments().getInt("height");// レイアウトの高さの設定
 
-		LinearLayout layout = (LinearLayout) mView
-				.findViewById(R.id.messege_window_linearlayout);
+		FrameLayout layout = (FrameLayout) mView
+				.findViewById(R.id.messege_window_framelayout);
+
+		ImageView imgV = new ImageView(getActivity());
+		imgV.setScaleType(ScaleType.FIT_XY);
+		imgV.setImageResource(R.drawable.window);
+		layout.addView(imgV);
+		
 		MessegeSurfaceView sf = new MessegeSurfaceView(getActivity());
 		layout.addView(sf);
 		return mView;
@@ -87,7 +96,10 @@ public class StoryMessegeWindowFragment extends Fragment {
 		public MessegeSurfaceView(Context context) {
 			super(context);
 			SurfaceHolder surfaceHolder = getHolder();
+			surfaceHolder.setFormat(PixelFormat.TRANSLUCENT);
 			surfaceHolder.addCallback(this);
+	        // このViewをトップにする
+	        setZOrderOnTop(true);
 		}
 
 		@Override
