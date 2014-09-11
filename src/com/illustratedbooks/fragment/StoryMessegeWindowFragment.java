@@ -1,10 +1,23 @@
 package com.illustratedbooks.fragment;
 
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import com.illustratedbooks.R;
+import com.illustratedbooks.story.StoryDisplayData;
+import com.illustratedbooks.story.StorySurfaceView;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -12,16 +25,41 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class StoryMessegeWindowFragment extends Fragment {
+	private static final String TAG = StoryMessegeWindowFragment.class
+			.getSimpleName();
 	private View mView;
 	private String mText;// 表示するテキスト
+	private Canvas mCanvas;
 
 	/* レイアウトの情報 */
 	private float mPointX;// レイアウトのx座標
 	private float mPointY;// レイアウトのy座標
 	private int mWidth;// レイアウトの幅
 	private int mHeight;// レイアウトの高さ
+
+	/* 描写関連 */
+	private ScheduledExecutorService mDrowTask;// 表示用スレッド
+	private ScheduledExecutorService mAutoModeTask;// オートモード用スレッド
+	private Boolean mAutoModeFlag = false;// オートモード用のフラグ
+	private int mAutoModeSp = 1000;// オートモードのスピード
+	private static int MSG_ALL = -1;// 文字送りをせずすべてを表示させるときに使用
+	public static final Boolean ON = true;// オートモードON
+	public static final Boolean OFF = false;// オートモードOFF
+	private int mMsgSpd = 100;// 文字送りする速度(=画面更新速度)(ms)
+	private static final int FASTEST_MSG_SPEED = 10;// 文字送りする速度=画面の更新速度の最速値
+	private int mNowPrintMsgNum = 0;// 現在表示しているメッセージの文字数
+
+	// メッセージウィンドウ
+	public final static String MSGWIN_PATH = "window.jpg";// ウィンドウのレイアウト
+	private Bitmap mMsgWin;// ウィンドウ画像
+	private Paint mPaintw; // メッセージウィンドウのプロパティ
+	private final static int ALPHA = 140;// 透過度
+
+	// テキスト
+	private int FONT_SIZE = 32;// フォントのサイズ
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,13 +86,104 @@ public class StoryMessegeWindowFragment extends Fragment {
 
 		public MessegeSurfaceView(Context context) {
 			super(context);
-			// TODO 自動生成されたコンストラクター・スタブ
+			SurfaceHolder surfaceHolder = getHolder();
+			surfaceHolder.addCallback(this);
 		}
 
 		@Override
-		public void surfaceCreated(SurfaceHolder holder) {
-			// TODO 自動生成されたメソッド・スタブ
+		public void surfaceCreated(final SurfaceHolder holder) {
+			
+			// SingleThreadScheduledExecutor による単一 Thread のインターバル実行
+			mDrowTask = Executors.newSingleThreadScheduledExecutor();
+			mDrowTask.scheduleAtFixedRate(new Runnable() {
 
+				@Override
+				public void run() {
+					// Canvas取得しロックする
+					mCanvas = holder.lockCanvas();
+
+					// *メッセージウィンドウの画像設定*//
+					if (mMsgWin == null) {
+						try {
+							mMsgWin = BitmapFactory.decodeStream(getResources()
+									.getAssets().open(MSGWIN_PATH));
+							mMsgWin = Bitmap.createScaledBitmap(mMsgWin,
+									mWidth, mHeight, true);
+
+							mPaintw = new Paint();
+							mPaintw.setAlpha(StoryMessegeWindowFragment.ALPHA);// 透過度を設定
+
+						} catch (IOException e) {
+							// TODO ウィンドウ背景画像の読み込みエラー
+							Log.e(TAG, "failed reading messege window file");
+							e.printStackTrace();
+						}
+					}
+
+					// 描画処理
+					if (!mText.equals("null")) {
+						mCanvas.drawBitmap(mMsgWin, mPointX, mPointY, mPaintw);// メッセージウィンドウを表示
+
+						if (mNowPrintMsgNum != mText.length()
+								&& mMsgSpd != FASTEST_MSG_SPEED) {
+							// 文字送り途中の場合
+							setMessege(mNowPrintMsgNum++);// メッセージウィンドウにテキストを表示
+						} else {
+							// 文字送り終了の場合　or 最速表示の場合
+							setMessege();
+						}
+					}
+					// LockしたCanvasを解放する
+					holder.unlockCanvasAndPost(mCanvas);
+				}
+
+			}, 0, mMsgSpd, TimeUnit.MILLISECONDS);// mMsgSpdの間隔で更新
+		}
+
+		/**
+		 * メッセージウィンドウにCSVに書かれているテキストをすべて表示させる
+		 */
+		private void setMessege() {
+			mNowPrintMsgNum = mText.length();// すべて表示させるため、現在表示しているメッセージの文字数を合わせる
+			setMessege(MSG_ALL);
+		}
+
+		/**
+		 * メッセージウィンドウにCSVに書かれているテキストを指定字数表示させる
+		 * 
+		 * @param charNo
+		 *            表示する文字数
+		 * 
+		 */
+		private void setMessege(int charNum) {
+			int padding = mWidth / 30;
+			Paint paintf = new Paint();
+			paintf.setColor(Color.WHITE);
+			paintf.setTextSize(FONT_SIZE);
+			String message = mText;
+			if (charNum == MSG_ALL)
+				charNum = message.length();// 全文字表示の場合
+			int maxWidth = mWidth - padding;// メッセージウィンドウの幅で改行する。
+			int lineBreakPoint = Integer.MAX_VALUE;// 仮に、最大値を入れておく
+			int currentIndex = 0;// 現在、原文の何文字目まで改行が入るか確認したかを保持する
+			float linePointY = mPointY + padding + FONT_SIZE;// 文字を描画するY位置。改行の度にインクリメントする。
+
+			while (charNum != 0) {
+				String mesureString = message.substring(currentIndex);// 未だ表示されていない文字列のみ抽出
+				lineBreakPoint = paintf.breakText(mesureString, true, maxWidth,
+						null);// 表示する文字列の幅
+				if (lineBreakPoint != 0) {
+					String line = message.substring(currentIndex, currentIndex
+							+ lineBreakPoint);// 表示する一文を抽出
+					if (charNum < line.length())
+						line = line.substring(0, charNum);
+					charNum -= line.length();
+					mCanvas.drawText(line, mPointX + padding, linePointY,
+							paintf);
+					linePointY += FONT_SIZE;// 改行後の位置
+					currentIndex += lineBreakPoint;// 次の表示する一文の開始位置
+				}
+			}
 		}
 
 		@Override
