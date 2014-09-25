@@ -69,8 +69,8 @@ public class StoryActivity extends FragmentActivity {
 	// テキスト
 	private Paint mPaintf; // テキストのプロパティ
 	private int FONT_SIZE = 32;// フォントのサイズ
-	private String mText;//表示するテキスト
-	
+	private String mText;// 表示するテキスト
+
 	// メッセージウィンドウ
 	public final static String MSGWIN_PATH = "window.jpg";// ウィンドウのレイアウト
 	private Bitmap mMsgWin;// ウィンドウ画像
@@ -121,7 +121,19 @@ public class StoryActivity extends FragmentActivity {
 			mCSVColumnNo = Integer.valueOf(sPref.getString("savedRowNo", "1"));
 			Log.d(TAG, "RowNo of Saved data is " + mCSVColumnNo);
 		}
-
+		/* 背景画像を取得 */
+		try {
+			// 背景の画像のPATHを取得
+			mBgPath = "background/" + mCSVdata.get(mCSVColumnNo)[BACK_GROUND];
+			// 背景画像を取得
+			mBgFig = BitmapFactory.decodeStream(getResources().getAssets()
+					.open(mBgPath));
+		} catch (IOException e) {
+			Log.e(TAG, "failed reading background  image file");
+			Toast.makeText(mAct, "failed reading background image file",
+					Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -165,23 +177,8 @@ public class StoryActivity extends FragmentActivity {
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
-		/* 背景画像を取得 */
-		try {
-			// 背景の画像のPATHを取得
-			mBgPath = "background/" + mCSVdata.get(mCSVColumnNo)[BACK_GROUND];
-			// 背景画像を取得
-			mBgFig = BitmapFactory.decodeStream(getResources().getAssets()
-					.open(mBgPath));
-		} catch (IOException e) {
-			Log.e(TAG, "failed reading background  image file");
-			Toast.makeText(mAct, "failed reading background image file",
-					Toast.LENGTH_SHORT).show();
-			e.printStackTrace();
-		}
-		
-		/*テキストを取得*/
-		mText=mCSVdata.get(mCSVColumnNo)[TEXT];
-		
+		/* テキストを取得 */
+		mText = mCSVdata.get(mCSVColumnNo)[TEXT];
 
 		/* onCreateではレンダリングが終わっていないためここで行う */
 		// フラグメントを入れるレイアウトを取得
@@ -196,24 +193,23 @@ public class StoryActivity extends FragmentActivity {
 		/* StoryBackgroundFragmentを設定 */
 		StoryBackgroundFragment bgf = new StoryBackgroundFragment();
 		// 背景画像を登録
-		Bundle bgBundle = new Bundle();  
+		Bundle bgBundle = new Bundle();
 		bgBundle.putParcelable("BgFig", mBgFig);
-		bgBundle.putFloat("pointX", mBgLayout.getX());//backgroundのX座標
-		bgBundle.putFloat("pointY", mBgLayout.getY());//backgroundのY座標
-		bgBundle.putInt("width", mBgLayout.getWidth());//レイアウトの幅
-		bgBundle.putInt("height", mBgLayout.getHeight());//レイアウトの高さ
+		bgBundle.putFloat("pointX", mBgLayout.getX());// backgroundのX座標
+		bgBundle.putFloat("pointY", mBgLayout.getY());// backgroundのY座標
+		bgBundle.putInt("width", mBgLayout.getWidth());// レイアウトの幅
+		bgBundle.putInt("height", mBgLayout.getHeight());// レイアウトの高さ
 		bgf.setArguments(bgBundle);
 
 		/* StoryMessegeWindowFragmentを設定 */
 		StoryMessegeWindowFragment mwf = new StoryMessegeWindowFragment();
 		Bundle mwBundle = new Bundle();
 		mwBundle.putString("Text", mText);
-		mwBundle.putFloat("pointX", mMsgLayout.getX());//MessegeWindowのX座標
-		mwBundle.putFloat("pointY", mMsgLayout.getY());//MessegeWindowのY座標
-		mwBundle.putInt("width", mMsgLayout.getWidth());//レイアウトの幅
-		mwBundle.putInt("height", mMsgLayout.getHeight());//レイアウトの高さ
+		mwBundle.putFloat("pointX", mMsgLayout.getX());// MessegeWindowのX座標
+		mwBundle.putFloat("pointY", mMsgLayout.getY());// MessegeWindowのY座標
+		mwBundle.putInt("width", mMsgLayout.getWidth());// レイアウトの幅
+		mwBundle.putInt("height", mMsgLayout.getHeight());// レイアウトの高さ
 		mwf.setArguments(mwBundle);
-
 
 		// Fragment をスタックに追加する
 		ft.add(mBgLayout.getId(), bgf, BACKGROUND_FLAGMENT);
@@ -223,7 +219,6 @@ public class StoryActivity extends FragmentActivity {
 
 	/**
 	 * フラグメントを変更する
-	 * 
 	 * @param fragment
 	 *            スタックへ登録するフラグメント
 	 */
@@ -267,40 +262,42 @@ public class StoryActivity extends FragmentActivity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			// // バックボタンが押されたとき
-			// if(mStSf.isAutoMode())
-			// //オートモード中の場合は解除
-			// mStSf.autoMode(StorySurfaceView.OFF);
-			//
-			// AlertDialog.Builder alertDialog = new AlertDialog.Builder(mAct);
-			//
-			// // ダイアログの設定
-			// alertDialog.setTitle("えほんをとじてはじめにもどる？"); // タイトル設定
-			// alertDialog.setMessage("えほんをとじてはじめにもどりますか？"); // 内容(メッセージ)設定
-			//
-			// // はいボタンの設定
-			// alertDialog.setPositiveButton("はい",
-			// new DialogInterface.OnClickListener() {
-			// public void onClick(DialogInterface dialog, int which) {
-			// // はいボタン押下時の処理
-			// Log.d(TAG, "えほんをとじてはじめにもどりますか？　＞　はい");
-			// Intent intent = new Intent();
-			// intent.setClass(mAct, MainActivity.class);
-			// startActivity(intent);
-			// mAct.finish();//Activityの終了
-			// }
-			// });
-			//
-			// // いいえボタンの設定
-			// alertDialog.setNegativeButton("いいえ",
-			// new DialogInterface.OnClickListener() {
-			// public void onClick(DialogInterface dialog, int which) {
-			// // いいえボタン押下時の処理
-			// Log.d(TAG, "えほんをとじてはじめにもどりますか？　＞　いいえ");
-			// }
-			// });
-			// alertDialog.show();
-			// return true;
+			// バックボタンが押されたとき
+			
+			
+//			if (mStSf.isAutoMode())
+//				// オートモード中の場合は解除
+//				mStSf.autoMode(StorySurfaceView.OFF);
+
+			AlertDialog.Builder alertDialog = new AlertDialog.Builder(mAct);
+
+			// ダイアログの設定
+			alertDialog.setTitle("えほんをとじてはじめにもどる？"); // タイトル設定
+			alertDialog.setMessage("えほんをとじてはじめにもどりますか？"); // 内容(メッセージ)設定
+
+			// はいボタンの設定
+			alertDialog.setPositiveButton("はい",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							// はいボタン押下時の処理
+							Log.d(TAG, "えほんをとじてはじめにもどりますか？　＞　はい");
+							Intent intent = new Intent();
+							intent.setClass(mAct, MainActivity.class);
+							startActivity(intent);
+							mAct.finish();// Activityの終了
+						}
+					});
+
+			// いいえボタンの設定
+			alertDialog.setNegativeButton("いいえ",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							// いいえボタン押下時の処理
+							Log.d(TAG, "えほんをとじてはじめにもどりますか？　＞　いいえ");
+						}
+					});
+			alertDialog.show();
+			return true;
 		default:
 			return false;
 		}
